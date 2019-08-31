@@ -47,36 +47,28 @@ func NewCircuitBreaker(name string, maxrequest int, timeout time.Duration, errco
 
 
 func (cb *CircuitBreaker) SetState(){
-
-
-	fmt.Println("Se ejecuto SetState")
-
-
-
 	go func() {
 		for{
-			msg := <- cb.ChainStatus
-			fmt.Println(msg)
+			<- cb.ChainStatus
 			if cb.State == STATE_HALF_OPEN {
-				fmt.Println("Entra en half-open")
+				fmt.Println("State: HALF-OPEN")
 				response, err := http.Get(utils.UrlPing)
 				if err != nil {
 					cb.State = STATE_OPEN
-					fmt.Println("Error del servidor")
 				}
 				if  response != nil {
 					if response.StatusCode == 200 {
 						cb.State = STATE_CLOSE
-						fmt.Println("Interruptor cerrado")
 					}
 				}
 			}
 			if cb.State == STATE_OPEN {
-				fmt.Println("El mensaje del usuario es", msg)
+				fmt.Println("State: OPEN")
 				cb.ChainTimeout <- <- time.After(cb.Timeout)
 
 			}
 			if cb.State == STATE_CLOSE {
+				fmt.Println("State: CLOSE")
 				cb.Reset()
 			}
 		}
@@ -93,14 +85,7 @@ func (cb *CircuitBreaker) SetState(){
 	go func() {
 		cb.ChainTimeout = make(chan time.Time)
 		for {
-			fmt.Println("Esperando timeout")
-			<-cb.ChainTimeout
-			fmt.Println("Se activo ChainTimeout")
-			if cb.State == STATE_OPEN {
-				cb.State = STATE_HALF_OPEN
-				fmt.Println("Pasa a half")
-				cb.ChainStatus <- "Status"
-			}
+			cb.WaitTimeOut()
 		}
 	}()
 }
@@ -124,12 +109,9 @@ func (cb *CircuitBreaker) Counter(msg string){
 }
 
 func (cb *CircuitBreaker) WaitTimeOut (){
-	fmt.Println("Esperando timeout")
 	<-cb.ChainTimeout
-	fmt.Println("Se activo ChainTimeout")
 	if cb.State == STATE_OPEN {
 		cb.State = STATE_HALF_OPEN
-		fmt.Println("Pasa a half")
 		cb.ChainStatus <- "Status"
 	}
 }
