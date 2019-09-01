@@ -29,15 +29,15 @@ func GetResultFromApi (c * gin.Context) {
 		return
 	}
 
-
-	if Cb.State != circuitbreaker.STATE_CLOSE {
-
-		c.JSON(580, &utils.ApiError{Status:580,Message:"Está bloqueado amigo"})
-		return
-
-	}
-
 	for {
+
+		if Cb.State != circuitbreaker.STATE_CLOSE {
+
+			c.JSON(http.StatusServiceUnavailable, &utils.ApiError{Status:http.StatusServiceUnavailable ,Message:"Status service unavailable"})
+			return
+
+		}
+
 		response, err := services.GetResult(id)
 		if err == nil || err.Status != 500 {
 			if err != nil {
@@ -102,13 +102,13 @@ func GetResultFromApiCh (c * gin.Context) {
 	// al contador de errores del CB si se activa el timeout (3 segundos) o la API de MELI devuelve error 500.
 	// En un pedido correcto se devuelve al canal un "OK", para resetear el contador de eventos.
 	for {
-		if Cb.State != circuitbreaker.STATE_CLOSE {
 
+		if Cb.State != circuitbreaker.STATE_CLOSE {
 			c.JSON(http.StatusServiceUnavailable, &utils.ApiError{Status:http.StatusServiceUnavailable ,Message:"Status service unavailable"})
 			return
 
-		}
 
+		}
 
 		// se crean nuevos canales cada bucle, para que las go routines lanzadas no tengan conflictos.
 		c1 := make(chan domains.Result, 1)
@@ -132,15 +132,15 @@ func GetResultFromApiCh (c * gin.Context) {
 				break
 			case res := <-c1:
 				c.JSON(http.StatusOK, res)
-				Cb.ChainCount <- "OK"
+				Cb.Counter(circuitbreaker.OK)
 				return
-			case res := <- c2:
-				c.JSON(res.Status,res)
-				Cb.ChainCount <- "OK"
+			case err := <- c2:
+				c.JSON(err.Status,err)
+				Cb.Counter(circuitbreaker.OK)
 				return
 		}
 
-		Cb.ChainCount <- "ERROR"
+		Cb.Counter(circuitbreaker.ERROR)
 	}
 }
 

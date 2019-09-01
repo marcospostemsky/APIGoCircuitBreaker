@@ -19,7 +19,7 @@ var (
 
 func main() {
 	timeout := 20
-	controllers.Cb = circuitbreaker.NewCircuitBreaker("cb",3,time.Second*time.Duration(timeout),0)
+	controllers.Cb = circuitbreaker.NewCircuitBreaker("cb",3,time.Second*time.Duration(timeout))
 
 	go controllers.Cb.SetState()
 
