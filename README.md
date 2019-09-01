@@ -20,7 +20,7 @@ Al realizar un GET al endpoint /resultsch/:userid en el puerto :9090, se pueden 
 En la siguiente imagen se presenta la lógica de la máquina de estado que corresponde al patrón.
 
 
-<img src="https://github.com/marcospostemsky/APIGoCircuitBreaker/blob/master/res/img/Maquina%20de%20estado%20Circuit%20Breaker.png" width="200" >
+<img src="https://github.com/marcospostemsky/APIGoCircuitBreaker/blob/master/res/img/Maquina%20de%20estado%20Circuit%20Breaker.png" width="500" >
 
 
 
