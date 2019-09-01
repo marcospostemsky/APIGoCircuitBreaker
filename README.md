@@ -19,7 +19,9 @@ Al realizar un GET al endpoint /resultsch/:userid en el puerto :9090, se pueden 
 
 En la siguiente imagen se presenta la lógica de la máquina de estado que corresponde al patrón.
 
-![](./res/img/Maquina%20de%20estado%20Circuit%20Breaker.png)
+
+
+![image](./res/img/Maquina%20de%20estado%20Circuit%20Breaker.png =100x)
 
 
 
