@@ -17,9 +17,9 @@ Al realizar un GET al endpoint /resultsch/:userid en el puerto :9090, se pueden 
 
 ## Lógica del patrón Circuit Breaker
 
-En la siguiente imagen se presenta la lógica de la máquina de estado que respeta el patrón.
+En la siguiente imagen se presenta la lógica de la máquina de estado que corresponde al patrón.
 
-![](https://github.com/marcospostemsky/APIGoCircuitBreaker/blob/master/res/img/Maquina%20de%20estado%20Circuit%20Breaker.png)
+![](./res/img/Maquina%20de%20estado%20Circuit%20Breaker.png)
 
 
 
